@@ -1,0 +1,4 @@
+.env
+node_modules/
+screenshots/
+test.mp4
