@@ -1,24 +1,29 @@
 const puppeteer = require('puppeteer')
-const fs = require('fs')
+const fs = require('fs').promises
 const path = require('path')
-
-fs.readdir('screenshots', (err, files) => {
-  if (err) throw err
-
-  for (const file of files) {
-    fs.unlink(path.join('screenshots', file), err => {
-      if (err) throw err
-    })
-  }
-})
-
 require('dotenv').config()
-const screenshot = 'youtube_fm_dreams_video.png'
+
+// create screenshots folder, if it doesn't exist already. Delete files from previous runs, if it exists
+;(async () => {
+  try{
+    const stats = await fs.stat('screenshots')
+    const files = await fs.readdir('screenshots')
+    for (const file of files) {
+      fs.unlink(path.join('screenshots', file))
+    }
+  } catch (err) {
+    if(err.code === 'ENOENT') {
+      await fs.mkdir('screenshots')
+    }
+  }
+})()
+
 try {
   (async () => {
     //{headless:false}
     const browser = await puppeteer.launch({headless:true})
     const page = await browser.newPage()
+    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
     await page.setViewport({ width: 1200, height: 800 })
     await page.goto('https://youtube.com')
     await page.screenshot({path: `screenshots/init.png`})
@@ -26,12 +31,9 @@ try {
     const buttonHandle = await page.evaluateHandle(`document.querySelector("#buttons > ytd-button-renderer > a")`)
     await buttonHandle.click()
 
-    // enter login info
-    
-    await page.waitForNavigation({timeout:25000, waitUntil:'domcontentloaded'})
+    // enter login info    
     await page.waitForSelector('#yDmH0d')
     await page.type('#identifierId', process.env.EMAIL)
-    await page.screenshot({path: `screenshots/login1.png`})
     await page.click('#identifierNext')
 
     // enter password
@@ -43,18 +45,37 @@ try {
     await page.evaluate(()=>document.querySelector('#passwordNext').click())
 
     let videoNumber = 1
-    // search
-    //await page.waitForSelector("ytd-thumbnail.ytd-rich-grid-renderer")
+    
+    await page.waitForNavigation({timeout:25000, waitUntil:'networkidle2'})
+    await page.screenshot({ path: `screenshots/0.png` })    
     await page.waitForSelector('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer') 
-    await page.screenshot({path: `screenshots/${videoNumber}.png`})
     const recommended = await page.$$('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer')
-    await recommended[0].click()
+    await recommended[2].click()
     
     while(1) {
+      await page.waitFor(4000)
       await page.waitForSelector('.html5-video-container')
-      await page.waitFor(5000)
+      try {
+        const example = await page.evaluate(() => {
+          const meta = {}
+          meta['title'] = document.querySelector('#container > h1 > yt-formatted-string').innerText
+          meta['views'] = document.querySelector('#count > yt-view-count-renderer > span.view-count.style-scope.yt-view-count-renderer').innerText
+          meta['published'] = document.querySelector('#date > yt-formatted-string').innerText
+          meta['channel'] = document.querySelector("#upload-info.style-scope.ytd-video-owner-renderer > #channel-name > div > div > yt-formatted-string > a").innerText
+          meta['subscribers'] = document.querySelector("#owner-sub-count").innerText
+          //meta['likes'] = document.querySelector("#text.style-scope.ytd-toggle-button-renderer.style-text").innerText
+          //meta['dislikes'] = 
+          return JSON.stringify(meta)
+        })
+        console.log(example)
+      } catch (e) {
+        console.log(e)
+        await page.waitFor(1000)
+        await page.screenshot({ path: `screenshots/ERROR.png` })
+      }
       await page.screenshot({ path: `screenshots/${videoNumber}.png` })
       console.log(`screenshot ${videoNumber++}`)
+      await page.waitFor(1000)
       await page.waitForSelector('a.ytp-next-button.ytp-button')
       try {
         await page.click('a.ytp-next-button.ytp-button')
@@ -63,39 +84,11 @@ try {
         await page.click('a#logo')
         await page.waitFor(5000)
         await page.waitForSelector('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer')
-        await page.screenshot({path: `screenshots/${videoNumber}-reset.png`})
+        await page.screenshot({path: `screenshots/${videoNumber - 1}-reset.png`})
         const recommended = await page.$$('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer')
         await recommended[0].click()
       }
-      //await page.waitForNavigation({timeout:0})
     }
-    
-    
-    
-    console.log('done')
-    /*
-    await page.type('#search', 'Clinton emails truth')
-    await page.click('button#search-icon-legacy')*/
-
-    //await page.waitForNavigation({timeout:4000})
-    
-    //const pass = await page.$eval("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input")
-    //await pass.type('dsa')
-    //console.log(searchValue)
-    //const buttons = await page.$$('#buttons')
-    //console.log(buttons[5])
-    //await buttons[3].click()
-    /*
-    await page.click('button#search-icon-legacy')
-    await page.waitForSelector('ytd-thumbnail.ytd-video-renderer')
-    await page.screenshot({path: 'youtube_fm_dreams_list.png'})
-    const videos = await page.$$('ytd-thumbnail.ytd-video-renderer')
-    await videos[2].click()
-    await page.waitForSelector('.html5-video-container')
-    await page.waitFor(5000)
-    await page.screenshot({ path: screenshot })*/
-    //await browser.close()
-    console.log('See screenshot: ' + screenshot)
   })()
 } catch (err) {
   console.error(err)
