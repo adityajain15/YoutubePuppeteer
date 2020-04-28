@@ -41,7 +41,10 @@ async function init() {
 async function puppet(db) {
   let autoplayCheck = true
   const collection = db.collection('videos')
-  const browser = await puppeteer.launch({headless:true})
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox']
+  })
   const page = await browser.newPage()
   await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36')
   await page.setViewport({ width: 1200, height: 800 })
