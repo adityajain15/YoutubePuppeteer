@@ -42,7 +42,7 @@ async function puppet(db) {
   let autoplayCheck = true
   const collection = db.collection('videos')
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ['--no-sandbox']
   })
   const page = await browser.newPage()
@@ -60,8 +60,9 @@ async function puppet(db) {
   await page.click('#identifierNext')
 
   // enter password
-  //await page.waitForNavigation({timeout:25000, waitUntil:'networkidle2'})
+  await page.waitForNavigation({timeout:25000, waitUntil:'networkidle2'})
   await page.waitFor(4000)
+  await page.screenshot({path: `screenshots/password.png`})
   await page.waitForSelector('#passwordNext')
   const input = await page.evaluateHandle(`document.querySelector("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input")`)
   await input.focus()
