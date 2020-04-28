@@ -55,14 +55,13 @@ async function puppet(db) {
   await buttonHandle.click()
 
   // enter login info    
+  
   await page.waitForSelector('#yDmH0d')
   await page.type('#identifierId', process.env.EMAIL)
   await page.click('#identifierNext')
 
   // enter password
-  await page.waitForNavigation({timeout:25000, waitUntil:'networkidle2'})
-  await page.waitFor(4000)
-  await page.screenshot({path: `screenshots/password.png`})
+  await page.waitForNavigation({timeout:25000, waitUntil:'networkidle0'})
   await page.waitForSelector('#passwordNext')
   const input = await page.evaluateHandle(`document.querySelector("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input")`)
   await input.focus()
@@ -71,7 +70,13 @@ async function puppet(db) {
 
   let videoNumber = 1
   let errorNumber = 1
-  await page.waitForNavigation({timeout:25000, waitUntil:'networkidle2'})
+  try {
+    await page.waitForNavigation({timeout:60000, waitUntil:'networkidle2'})
+  } catch (e) {
+    console.log('Login failed')
+    await page.screenshot({ path: `screenshots/error.png` })
+    return
+  }
   //page.on('console', consoleObj => console.log(consoleObj.text()))
   await page.screenshot({ path: `screenshots/0.png` })    
   await page.waitForSelector('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer') 
