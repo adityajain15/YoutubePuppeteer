@@ -60,7 +60,8 @@ async function puppet(db) {
   await page.click('#identifierNext')
 
   // enter password
-  await page.waitForNavigation({timeout:25000, waitUntil:'networkidle0'})
+  //await page.waitForNavigation({timeout:25000, waitUntil:'networkidle2'})
+  await page.waitFor(4000)
   await page.waitForSelector('#passwordNext')
   const input = await page.evaluateHandle(`document.querySelector("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input")`)
   await input.focus()
