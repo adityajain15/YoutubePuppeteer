@@ -112,7 +112,11 @@ async function puppet(videoNumber) {
   await phn[2].click()
   await page.waitFor(3000)
   await page.screenshot({ path: `screenshots/postdevice.png` })
-
+  const phninput = await page.evaluateHandle(`document.querySelector("#phoneNumberId")`)
+  await phninput.focus()
+  await phninput.type(process.env.PHONE)
+  await page.evaluate(()=>document.querySelector('.VfPpkd-RLmnJb').click())
+  await page.waitFor(5000)
   //page.on('console', consoleObj => console.log(consoleObj.text()))
   await page.screenshot({ path: `screenshots/0.png` })    
   await page.waitForSelector('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer') 
