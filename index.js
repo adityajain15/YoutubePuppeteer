@@ -9,6 +9,10 @@ const dbUrl = 'mongodb://localhost:27017'
 require('dotenv').config()
 const PuppeteerBlocker = require('@cliqz/adblocker-puppeteer').PuppeteerBlocker
 const fetch = require('cross-fetch')
+//const chromeLauncher = require('chrome-launcher');
+var Xvfb = require('xvfb');
+var xvfb = new Xvfb();
+xvfb.startSync();
 
 async function setupDatabase() {
   const client = await mongo.connect(dbUrl, { useUnifiedTopology: true })
@@ -56,13 +60,13 @@ async function puppet(videoNumber) {
   let autoplayCheck = true
   //const collection = db.collection('videos')
   const browser = await puppeteer.launch({
-    headless: true
+    headless: false
   })//args: ['--no-sandbox']
   const page = await browser.newPage()
 
   
 
-  await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36')
+  //await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36')
   await page.setViewport({ width: 1200, height: 800 })
   await page.goto('https://www.youtube.com')
   PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
@@ -244,5 +248,6 @@ function getTime(time) {
    // waitTime = waitTime >= 600000 ? 600000 : 5000 + waitTime // dont watch anything for more than 10 minutes
   return 5000 + waitTime
 }
+//xvfb.stopSync();
 
 init()
