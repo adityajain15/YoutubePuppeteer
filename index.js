@@ -106,6 +106,13 @@ async function puppet(videoNumber) {
   }
   await page.waitFor(10000)
   console.log(`----Logged In----`)
+  await page.screenshot({ path: `screenshots/predevice.png` })   
+  await page.waitForSelector('.lCoei') 
+  const phn = await page.$$('.lCoei')
+  await phn[2].click()
+  await page.waitFor(3000)
+  await page.screenshot({ path: `screenshots/postdevice.png` })
+
   //page.on('console', consoleObj => console.log(consoleObj.text()))
   await page.screenshot({ path: `screenshots/0.png` })    
   await page.waitForSelector('ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer') 
