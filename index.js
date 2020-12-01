@@ -79,9 +79,10 @@ async function puppet(videoNumber) {
   await page.screenshot({path: `screenshots/loginpage.png`})
   await page.type('#identifierId', process.env.EMAIL)
   await page.click('#identifierNext')
-
   // enter password
+  await page.screenshot({path: `screenshots/login_pass1.png`})
   await page.waitForNavigation({timeout:25000, waitUntil:'networkidle0'})
+  await page.screenshot({path: `screenshots/login_pass2.png`})
   await page.waitForSelector('#passwordNext')
   const input = await page.evaluateHandle(`document.querySelector("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input")`)
   await input.focus()
