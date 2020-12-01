@@ -104,6 +104,7 @@ async function puppet(videoNumber) {
     await page.screenshot({ path: `screenshots/error.png` })
     return
   }
+  await page.waitFor(10000)
   console.log(`----Logged In----`)
   //page.on('console', consoleObj => console.log(consoleObj.text()))
   await page.screenshot({ path: `screenshots/0.png` })    
