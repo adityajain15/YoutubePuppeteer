@@ -76,6 +76,7 @@ async function puppet(videoNumber) {
   // enter login info    
   
   await page.waitForSelector('#yDmH0d')
+  await page.screenshot({path: `screenshots/loginpage.png`})
   await page.type('#identifierId', process.env.EMAIL)
   await page.click('#identifierNext')
 
