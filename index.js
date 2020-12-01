@@ -47,14 +47,14 @@ async function setupFolder() {
 async function init() {
   const maxVideoNum = await setupFolder()
   console.log(`----Folder setup----`)
-  const db = await setupDatabase()
-  console.log(`----Database setup----`)
-  puppet(db, maxVideoNum)
+  //const db = await setupDatabase()
+  //console.log(`----Database setup----`)
+  puppet(maxVideoNum)
 }
 
-async function puppet(db, videoNumber) {
+async function puppet(videoNumber) {
   let autoplayCheck = true
-  const collection = db.collection('videos')
+  //const collection = db.collection('videos')
   const browser = await puppeteer.launch({
     headless: false
   })//args: ['--no-sandbox']
@@ -185,13 +185,13 @@ async function puppet(db, videoNumber) {
       const imageUrl = `screenshots/${videoNumber}.png`
       await player.screenshot({ path: imageUrl })
       metadata['image'] = path.join(__dirname, imageUrl)
-      const videoInserted = await db.collection('Videos').insertOne(metadata)
-      await db.collection('Recommendations').insertMany(
+      //const videoInserted = await db.collection('Videos').insertOne(metadata)
+      /*await db.collection('Recommendations').insertMany(
         recommended.map(d=>{
           d['video'] = videoInserted.insertedId
           return d
         })
-      )
+      )*/
       videoNumber++
       await page.waitFor(getTime(metadata['length']))
     } catch (e) {
