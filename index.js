@@ -56,7 +56,7 @@ async function puppet(videoNumber) {
   let autoplayCheck = true
   //const collection = db.collection('videos')
   const browser = await puppeteer.launch({
-    headless: false
+    headless: true
   })//args: ['--no-sandbox']
   const page = await browser.newPage()
 
