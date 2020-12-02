@@ -25,6 +25,7 @@ async function setupDatabase() {
 }
 
 async function setupFolder() {
+  return 1
   let max = 1
   try {
     const stats = await fs.stat('screenshots')
@@ -145,7 +146,7 @@ async function puppet(videoNumber) {
     }
     
     try {
-      await page.waitFor(4000)
+      await page.waitFor(6000)
       
       //await page.waitForSelector('.html5-video-container')
       let [metadata, recommended] = await page.evaluate(async () => {
@@ -200,8 +201,9 @@ async function puppet(videoNumber) {
         }
         return Promise.resolve([meta, children])
       })
-      console.log(metadata)
+      
       metadata['url'] = page.url()
+      console.log(metadata)
       const player = await page.$('#player-container-outer')
       const imageUrl = `screenshots/${videoNumber}.png`
       await page.screenshot({path:`screenshots/page-${videoNumber}.png`})
