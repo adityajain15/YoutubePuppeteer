@@ -205,7 +205,7 @@ async function puppet(videoNumber) {
       metadata['url'] = page.url()
       const player = await page.$('#player-container-outer')
       const imageUrl = `screenshots/${videoNumber}.png`
-      await page.screenshot(`screenshots/page-${videoNumber}.png`)
+      await page.screenshot({path:`screenshots/page-${videoNumber}.png`})
       await player.screenshot({ path: imageUrl })
       metadata['image'] = path.join(__dirname, imageUrl)
       //const videoInserted = await db.collection('Videos').insertOne(metadata)
