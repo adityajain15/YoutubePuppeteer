@@ -104,7 +104,6 @@ async function puppet(videoNumber) {
     await page.screenshot({ path: `screenshots/error.png` })
     return
   }
-  await page.waitFor(10000)
   console.log(`----Logged In----`)
   /*await page.screenshot({ path: `screenshots/predevice.png` })   
   await page.waitForSelector('.lCoei') 
@@ -216,7 +215,7 @@ async function puppet(videoNumber) {
         })
       )*/
       videoNumber++
-      await page.waitFor(getTime(metadata['length']))
+      //await page.waitFor(getTime(metadata['length']))
     } catch (e) {
       // error, video can probably not be played
       console.log('------------------------------------------------')
